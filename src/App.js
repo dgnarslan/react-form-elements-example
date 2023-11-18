@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.css';
 
 export default function App() {
@@ -15,6 +15,12 @@ export default function App() {
     {key : 4, value: 'HTML'}
   ]
 
+  const levels = [
+    {key: 'beginner', value : 'Başlangıç'},
+    {key: 'jr_developer', value : 'Jr. Developer'},
+    {key: 'sr_developer', value : 'Sr. Developer'},
+  ]
+
 
   
   const [name, setName] = useState('Dgn')
@@ -27,9 +33,23 @@ export default function App() {
     {key : 2 , value: '2. kuralı kabul ediyorum', checked: false},
     {key : 3 , value: '3. kuralı kabul ediyorum', checked: true},
   ])
+  const [level, setLevel] = useState('jr_developer')
+  const [avatar, setAvatar] = useState(false) 
+  const [image, setImage] = useState(false)
+
+  useEffect(()=>{
+    if(avatar){
+      const fileReader = new FileReader()
+      fileReader.addEventListener('load', function() {
+      setImage(this.result)
+      })
+      fileReader.readAsDataURL(avatar)
+    }
+  },[avatar])
   
   const selectedCategory = category && categoryList.filter(cat => category.includes(cat.key))
   const selectGender = genders.find(g => g.key === gender)
+  const selectLevel = levels.find(g => g.key === level)
 
   const checkRule = (key,checked) => {
     setRules(rules => rules.map(rule => {
@@ -91,6 +111,28 @@ export default function App() {
       ))}
       <br />
       <button disabled={!enabled}>Devam Et</button>
+      <br />
+      <hr />
+      {levels.map((levelItem, index) => (
+        <label key={index}>
+          <input type="radio" value={levelItem.key} checked={levelItem.key === level} onChange={e => setLevel(e.target.value)}/>
+          {levelItem.key}
+        </label>
+      ))}
+      <br />
+      {JSON.stringify(selectLevel, undefined, 1)}
+      <br />
+      <hr />
+      <label>
+        <input type="file" onChange={e => setAvatar(e.target.files[0])}/>
+      </label>
+      <br />
+      {avatar && (
+        <>
+        <h3>{avatar.name}</h3>
+         {image && <img src={image}></img>}
+        </>
+      )}
     </>
   ); 
 }
